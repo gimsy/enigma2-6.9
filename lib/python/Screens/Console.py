@@ -36,11 +36,17 @@ class Console(Screen):
 	def updateTitle(self):
 		self.setTitle(self.newtitle)
 
+	def doExec(self, cmd):
+		if isinstance(cmd, (list, tuple)):
+			return self.container.execute(cmd[0], *cmd)
+		else:
+			return self.container.execute(cmd)
+
 	def startRun(self):
 		self["text"].setText(_("Execution progress:") + "\n\n")
 		self["summary_description"].setText(_("Execution progress:"))
-		print "Console: executing in run", self.run, " the command:", self.cmdlist[self.run]
-		if self.container.execute(self.cmdlist[self.run]): #start of container application failed...
+		print "[Console] executing in run", self.run, " the command:", self.cmdlist[self.run]
+		if self.doExec(self.cmdlist[self.run]): #start of container application failed...
 			self.runFinished(-1) # so we must call runFinished manual
 
 	def runFinished(self, retval):
@@ -48,16 +54,12 @@ class Console(Screen):
 			self.errorOcurred = True
 		self.run += 1
 		if self.run != len(self.cmdlist):
-			if self.container.execute(self.cmdlist[self.run]): #start of container application failed...
+			if self.doExec(self.cmdlist[self.run]): #start of container application failed...
 				self.runFinished(-1) # so we must call runFinished manual
 		else:
 			lastpage = self["text"].isAtLastPage()
-			str = self["text"].getText()
-			str += _("Execution finished!!")
+			self["text"].appendText(_("Execution finished!!"))
 			self["summary_description"].setText(_("Execution finished!!"))
-			self["text"].setText(str)
-			if lastpage:
-				self["text"].lastPage()
 			if self.finishedCallback is not None:
 				self.finishedCallback()
 			if not self.errorOcurred and self.closeOnSuccess:
@@ -70,7 +72,4 @@ class Console(Screen):
 			self.container.dataAvail.remove(self.dataAvail)
 
 	def dataAvail(self, str):
-		lastpage = self["text"].isAtLastPage()
-		self["text"].setText(self["text"].getText() + str)
-		if lastpage:
-			self["text"].lastPage()
+		self["text"].appendText(str)
