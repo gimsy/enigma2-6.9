@@ -46,7 +46,6 @@ from Tools.Directories import SCOPE_VOD
 from Tools import Directories, Notifications
 from Tools.Directories import pathExists, fileExists, getRecordingFilename, copyfile, moveFiles, resolveFilename, SCOPE_TIMESHIFT, SCOPE_CURRENT_SKIN
 from Tools.KeyBindings import getKeyDescription
-from Tools.ServiceReference import hdmiInServiceRef
 from enigma import eTimer, eServiceCenter, eDVBServicePMTHandler, iServiceInformation, iPlayableService, eServiceReference, eEPGCache, eActionMap, eDVBVolumecontrol, getDesktop, quitMainloop, eDVBDB
 from boxbranding import getBoxType, getMachineProcModel, getMachineBuild, getMachineBrand, getMachineName
 
@@ -5038,14 +5037,14 @@ class InfoBarHdmi:
 		if self.LongButtonPressed:
 			if not hasattr(self.session, 'pip') and not self.session.pipshown:
 				self.session.pip = self.session.instantiateDialog(PictureInPicture)
-				self.session.pip.playService(hdmiInServiceRef())
+				self.session.pip.playService(eServiceReference('8192:0:1:0:0:0:0:0:0:0:'))
 				self.session.pip.show()
 				self.session.pipshown = True
 				self.session.pip.servicePath = self.servicelist.getCurrentServicePath()
 			else:
 				curref = self.session.pip.getCurrentService()
-				if curref and curref.type != eServiceReference.idServiceHDMIIn:
-					self.session.pip.playService(hdmiInServiceRef())
+				if curref and curref.type != 8192:
+					self.session.pip.playService(eServiceReference('8192:0:1:0:0:0:0:0:0:0:'))
 					self.session.pip.servicePath = self.servicelist.getCurrentServicePath()
 				else:
 					self.session.pipshown = False
@@ -5055,8 +5054,8 @@ class InfoBarHdmi:
 		if not self.LongButtonPressed:
 			slist = self.servicelist
 			curref = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-			if curref and curref.type != eServiceReference.idServiceHDMIIn:
-				self.session.nav.playService(hdmiInServiceRef())
+			if curref and curref.type != 8192:
+				self.session.nav.playService(eServiceReference('8192:0:1:0:0:0:0:0:0:0:'))
 			else:
 				self.session.nav.playService(slist.servicelist.getCurrent())
 
@@ -5095,15 +5094,15 @@ class InfoBarHdmi:
 			if not hasattr(self.session, 'pip') and not self.session.pipshown:
 				self.hdmi_enabled_pip = True
 				self.session.pip = self.session.instantiateDialog(PictureInPicture)
-				self.session.pip.playService(hdmiInServiceRef())
+				self.session.pip.playService(eServiceReference('8192:0:1:0:0:0:0:0:0:0:'))
 				self.session.pip.show()
 				self.session.pipshown = True
 				self.session.pip.servicePath = self.servicelist.getCurrentServicePath()
 			else:
 				curref = self.session.pip.getCurrentService()
-				if curref and curref.type != eServiceReference.idServiceHDMIIn:
+				if curref and curref.type != 8192:
 					self.hdmi_enabled_pip = True
-					self.session.pip.playService(hdmiInServiceRef())
+					self.session.pip.playService(eServiceReference('8192:0:1:0:0:0:0:0:0:0:'))
 					self.session.pip.servicePath = self.servicelist.getCurrentServicePath()
 				else:
 					self.hdmi_enabled_pip = False
@@ -5156,9 +5155,9 @@ class InfoBarHdmi:
 		else:
 			slist = self.servicelist
 			curref = self.session.nav.getCurrentlyPlayingServiceOrGroup()
-			if curref and curref.type != eServiceReference.idServiceHDMIIn:
+			if curref and curref.type != 8192:
 				self.hdmi_enabled_full = True
-				self.session.nav.playService(hdmiInServiceRef())
+				self.session.nav.playService(eServiceReference('8192:0:1:0:0:0:0:0:0:0:'))
 			else:
 				self.hdmi_enabled_full = False
 				self.session.nav.playService(slist.servicelist.getCurrent())
