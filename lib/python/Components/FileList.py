@@ -4,7 +4,7 @@ from MenuList import MenuList
 from Components.Harddisk import harddiskmanager
 from Tools.Directories import SCOPE_ACTIVE_SKIN, resolveFilename, fileExists, pathExists
 from enigma import RT_HALIGN_LEFT, eListboxPythonMultiContent, \
-	eServiceReference, eServiceCenter, gFont
+	eServiceReference, eServiceReferenceFS, eServiceCenter, gFont
 from Tools.LoadPixmap import LoadPixmap
 import skin
 
