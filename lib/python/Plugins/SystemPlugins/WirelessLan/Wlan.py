@@ -64,7 +64,6 @@ class Wlan:
 				driver = iNetwork.detectWlanModule(self.iface)
 				if driver in ('brcm-wl', ):
 					system("wl up")
-
 		ifobj = Wireless(self.iface) # a Wireless NIC Object
 
 		try:
@@ -131,7 +130,6 @@ class Wlan:
 					system("wl down")
 				self.oldInterfaceState = None
 				self.iface = None
-
 iWlan = Wlan()
 
 class brcmWLConfig:

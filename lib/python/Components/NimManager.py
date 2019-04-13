@@ -1191,7 +1191,7 @@ class NimManager:
 		#          Name: Alps BSBE1 702A
 
 		#
-		# Type will be either "DVB-S", "DVB-S2", "DVB-T", "DVB-C" or None.
+		# Type will be either "DVB-S", "DVB-S2", "DVB-S2X", "DVB-T", "DVB-C" or None.
 
 		# nim_slots is an array which has exactly one entry for each slot, even for empty ones.
 		self.nim_slots = [ ]
@@ -1372,7 +1372,7 @@ class NimManager:
 
 	def canEqualTo(self, slotid):
 		type = self.getNimType(slotid)
-		type = type[:5] # DVB-S2 --> DVB-S, DVB-T2 --> DVB-T, DVB-C2 --> DVB-C
+		type = type[:5] # DVB-S2X --> DVB-S2 --> DVB-S, DVB-T2 --> DVB-T, DVB-C2 --> DVB-C
 		nimList = self.getNimListOfType(type, slotid)
 		for nim in nimList[:]:
 			if self.nim_slots[nim].canBeCompatible('DVB-S'):
@@ -1383,7 +1383,7 @@ class NimManager:
 
 	def canDependOn(self, slotid):
 		type = self.getNimType(slotid)
-		type = type[:5] # DVB-S2 --> DVB-S, DVB-T2 --> DVB-T, DVB-C2 --> DVB-C
+		type = type[:5] # DVB-S2X --> DVB-S2 --> DVB-S, DVB-T2 --> DVB-T, DVB-C2 --> DVB-C
 		nimList = self.getNimListOfType(type, slotid)
 		positionerList = []
 		for nim in nimList[:]:
@@ -2068,6 +2068,7 @@ def InitNimManager(nimmgr, update_slots=None):
 			f = open("/proc/stb/frontend/%d/t2mirawmode" % fe_id, "w")
 			f.write(configElement.value)
 			f.close()
+
 	def connectedToChanged(slot_id, nimmgr, configElement):
 		configMode = nimmgr.getNimConfig(slot_id).dvbs.configMode
 		if configMode.value == 'loopthrough':

@@ -11,10 +11,9 @@ import enigma
 config.misc.pluginlist = ConfigSubsection()
 config.misc.pluginlist.eventinfo_order = ConfigText(default="")
 config.misc.pluginlist.extension_order = ConfigText(default="")
-config.misc.pluginlist.fc_bookmarks_order = ConfigText(default="")
 
 class ChoiceBox(Screen):
-	def __init__(self, session, title="", list=None, keys=None, selection=0, skin_name=None, text="", reorderConfig="", var="", menu_path="", windowTitle = None, allow_cancel = True, titlebartext = _("Choice Box")):
+	def __init__(self, session, title="", list=None, keys=None, selection=0, skin_name=None, text="", reorderConfig="", windowTitle = None, allow_cancel = True, titlebartext = _("Choice Box")):
 		if not windowTitle:
 			windowTitle = titlebartext
 		if not list: list = []
@@ -34,9 +33,6 @@ class ChoiceBox(Screen):
 			self['tl_red'] = Pixmap()
 			self['tl_yellow'] = Pixmap()
 			self['tl_green'] = Pixmap()
-		if skin_name and 'SoftwareUpdateChoices' in skin_name:
-			self["menu_path_compressed"] = StaticText(menu_path)
-
 		if title:
 			title = _(title)
 			if len(title) < 55 and title.find('\n') == -1:
@@ -52,7 +48,7 @@ class ChoiceBox(Screen):
 							labeltext += '\n'
 						labeltext = labeltext + temptext[count-1]
 						count += 1
-						print '[Choicebox] count', count
+						print 'count',count
 					self["text"].setText(labeltext)
 				else:
 					self["text"] = Label(title)
@@ -91,7 +87,7 @@ class ChoiceBox(Screen):
                                 self.__keys = new_keys
 		for x in list:
 			strpos = str(self.__keys[pos])
-			self.list.append(ChoiceEntryComponent(key=strpos, text=x))
+			self.list.append(ChoiceEntryComponent(key = strpos, text = x))
 			if self.__keys[pos] != "":
 				self.keymap[self.__keys[pos]] = list[pos]
 			self.summarylist.append((self.__keys[pos], x[0]))
@@ -124,12 +120,10 @@ class ChoiceBox(Screen):
 			"left": self.left,
 			"right": self.right,
 			"shiftUp": self.additionalMoveUp,
-			"shiftDown": self.additionalMoveDown,
-			"menu": self.setDefaultChoiceList,
-			"back": lambda: 0,  # drop through to self["cancelaction"]
-		}, prio=-2)
-
-		self["cancelaction"] = ActionMap(["WizardActions"],
+                        "shiftDown": self.additionalMoveDown,
+                        "menu": self.setDefaultChoiceList
+		}, -1)
+		self["cancelaction"] = NumberActionMap(["WizardActions", "InputActions", "ColorActions"],
 		{
 			"back": self.cancel,
 		}, -1)
@@ -137,12 +131,8 @@ class ChoiceBox(Screen):
 
 	def onshow(self):
 		if self.skinName and 'SoftwareUpdateChoices' in self.skinName and self.var and self.var in ('unstable', 'updating', 'stable', 'unknown'):
-			from Components.OnlineUpdateCheck import feedsstatuscheck
-			if self.var in feedsstatuscheck.feed_status_msgs:
-				status_text = feedsstatuscheck.feed_status_msgs[self.var]
-			else:
-				status_text = _('Feeds status: Unexpected')
-			self['feedStatusMSG'].setText(status_text)
+			status_msgs = {'stable': _('Feeds status:   Stable'), 'unstable': _('Feeds status:   Unstable'), 'updating': _('Feeds status:   Updating'), 'unknown': _('No connection')}
+			self['feedStatusMSG'].setText(status_msgs[self.var])
 			self['tl_off'].hide()
 			self['tl_red'].hide()
 			self['tl_yellow'].hide()
@@ -159,28 +149,24 @@ class ChoiceBox(Screen):
 	def autoResize(self):
 		desktop_w = enigma.getDesktop(0).size().width()
 		desktop_h = enigma.getDesktop(0).size().height()
-		itemheight = self["list"].getItemHeight()
 		count = len(self.list)
+		itemheight = self["list"].getItemHeight()
 		if count > 15:
 			count = 15
-		width = self["list"].instance.size().width()
-		if width < 0 or width > desktop_w:
-			width = 520
 		if not self["text"].text:
-
-			textsize = (width, 0)
-			listsize = (width, itemheight * count)
+			textsize = (520, 0)
+			listsize = (520, itemheight*count)
 			self["list"].instance.move(enigma.ePoint(0, 0))
 			self["list"].instance.resize(enigma.eSize(*listsize))
 		else:
 			textsize = self["text"].getSize()
 			if textsize[0] < textsize[1]:
-				textsize = (textsize[1], textsize[0] + 10)
-			if textsize[0] > width:
-				textsize = (textsize[0], textsize[1] + itemheight)
+				textsize = (textsize[1],textsize[0]+10)
+			if textsize[0] > 520:
+				textsize = (textsize[0], textsize[1]+itemheight)
 			else:
-				textsize = (width, textsize[1] + itemheight)
-			listsize = (textsize[0], itemheight * count)
+				textsize = (520, textsize[1]+itemheight)
+			listsize = (textsize[0], itemheight*count)
 			self["text"].instance.resize(enigma.eSize(*textsize))
 			self["text"].instance.move(enigma.ePoint(10, 10))
 			self["list"].instance.move(enigma.ePoint(0, textsize[1]))
@@ -243,7 +229,7 @@ class ChoiceBox(Screen):
 			self.close(entry)
 
 	def goKey(self, key):
-		if key in self.keymap:
+		if self.keymap.has_key(key):
 			entry = self.keymap[key]
 			self.goEntry(entry)
 
@@ -281,7 +267,7 @@ class ChoiceBox(Screen):
 
         def setDefaultChoiceList(self):
                 if self.reorderConfig:
-                        if len(self.list) > 0 and self.config_type.value != "":
+                        if len(self.list) > 0 and self.config_type.value != '':
                                 self.session.openWithCallback(self.setDefaultChoiceListCallback, MessageBox, _('Sort list to default and exit?'), MessageBox.TYPE_YESNO)
                 else:
                         self.cancel()
